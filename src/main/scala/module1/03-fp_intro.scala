@@ -103,9 +103,14 @@ object opt {
      * Реализовать метод filter для списка который будет фильтровать список по некому условию
      */
     /**
-     *
+     *Реализован
      * Написать функцию incList котрая будет принимать список Int и возвращать список,
      * где каждый элемент будет увеличен на 1
+     */
+    /**
+     *Реализован
+     * Написать функцию shoutString котрая будет принимать список String и возвращать список,
+     * где к каждому элементу будет добавлен префикс в виде '!'
      */
 
     sealed trait List[+T] {
@@ -152,9 +157,10 @@ object opt {
         loop(this).reverse
       }
 
-      //def incList(list: List[Int]):List[Int] = map(_ + 1)
+      //def incList(list: List[Int]):List[Int] = list.map(_ + 1)
       def incList(list:List[Int]): List[Int] = {
-        def loop(inputList: List[Int],acc: List[Int]): List[Int] = {
+        @tailrec
+        def loop(inputList: List[Int], acc: List[Int]): List[Int] = {
           inputList match {
             case List.Nil => acc
             case List.::(head,tail) => loop(tail, head + 1 :: acc)
@@ -163,6 +169,18 @@ object opt {
         loop(list, List[Int]()).reverse
       }
 
+      //def shoutString(list: List[String]):List[String] = list.map(_ + "!")
+
+      def shoutString(list:List[String]): List[String] = {
+        @tailrec
+        def loop(inputList: List[String], acc: List[String]): List[String] = {
+          inputList match {
+            case List.Nil => acc
+            case List.::(head,tail) => loop(tail, head + "!" :: acc)
+          }
+        }
+        loop(list, List[String]()).reverse
+      }
       object List{
         case class ::[A](head: A, tail: List[A]) extends List[A]
         case object Nil extends List[Nothing]
