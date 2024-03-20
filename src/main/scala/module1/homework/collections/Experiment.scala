@@ -4,8 +4,22 @@ import scala.util.Random
 
 class Experiment {
 
-  val bucket: List[Int] = List(1,1,1,0,0,0)
-  def pickUp(): Boolean = bucket.map(_ == 1).apply(new Random().nextInt(bucket.length))
+  val bucket: List[Int] = List.fill(3)(1) ::: List.fill(3)(0)
+
+  val pickUpTwice: Boolean = {
+    val firstPick: Boolean = bucket(new Random().nextInt(bucket.length)) == 1
+    var list: List[Int] = List.empty[Int]
+
+    if (firstPick) {
+      list = bucket.slice(1, 6)
+    } else {
+      list = bucket.slice(0,5)
+    }
+    val secondPick: Boolean = list(new Random().nextInt(list.length)) == 1
+
+    if (secondPick || firstPick) true
+    else false
+  }
 
 
 }
@@ -13,13 +27,10 @@ class Experiment {
 object Main {
 
   def main(args: Array[String]): Unit = {
-    val listExperiment:List[Boolean] = (0 to 10000).map(_ => new Experiment().pickUp()).toList
+    val result: Int = List.fill(10000)(new Experiment().pickUpTwice).count(x => x)
+    println(s"Result =  ${(result.toDouble / 100)} %")
 
-    val countTrue:Double = listExperiment.count(x => x).toDouble
-    val resultExperiment:Double = countTrue / listExperiment.length
-    println(s"$countTrue  / ${listExperiment.length} = ${resultExperiment * 100}" )
   }
-
 
 
 }
