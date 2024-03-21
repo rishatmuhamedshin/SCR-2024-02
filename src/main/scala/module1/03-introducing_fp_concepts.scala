@@ -7,7 +7,7 @@ import scala.language.postfixOps
 
 
 
- // recursion
+// recursion
 
 object recursion {
 
@@ -19,26 +19,24 @@ object recursion {
   def fact(n: Int): Int = {
     var _n = 1
     var i = 2
-    while (i <= n){
+    while (i <= n) {
       _n *= i
       i += 1
     }
     _n
   }
 
-  def factRec(n: Int): Int = if(n <= 0) 1 else n * factRec(n - 1)
+  def factRec(n: Int): Int = if (n <= 0) 1 else n * factRec(n - 1)
 
   def factTailRec(n: Int): Int = {
     @tailrec
     def loop(n: Int, acc: Int): Int = {
-      if(n <= 0) acc
+      if (n <= 0) acc
       else loop(n - 1, n * acc)
     }
+
     loop(n, 1)
   }
-
-
-
 
 
   /**
@@ -50,7 +48,7 @@ object recursion {
 
 }
 
-object hof{
+object hof {
 
 
   // обертки
@@ -93,57 +91,39 @@ object hof{
   p(3) // 5
 
 
+  trait Consumer {
+    def subscribe(topic: String): Stream[Record]
+  }
 
+  case class Record(value: String)
 
+  case class Request()
 
-
-
-
-
-
-
-
-
-
-
-  trait Consumer{
-       def subscribe(topic: String): Stream[Record]
-   }
-
-   case class Record(value: String)
-
-   case class Request()
-   
-   object Request {
-       def parse(str: String): Request = ???
-   }
+  object Request {
+    def parse(str: String): Request = ???
+  }
 
   /**
    *
    * (Опционально) Реализовать ф-цию, которая будет читать записи Request из топика,
    * и сохранять их в базу
    */
-   def createRequestSubscription() = ???
-
+  def createRequestSubscription() = ???
 
 
 }
 
 
-
-
-
-
 /**
- *  Реализуем тип Option
+ * Реализуем тип Option
  */
 
 
-
- object opt {
+object opt {
 
 
   class Animal
+
   class Dog extends Animal
 
   /**
@@ -156,7 +136,7 @@ object hof{
   // 3. contravariance A <- B Option[A] -> Option[B]
 
 
-  sealed trait Option[+T]{
+  sealed trait Option[+T] {
 
     def isEmpty: Boolean = this match {
       case Some(v) => false
@@ -179,25 +159,19 @@ object hof{
   }
 
   case class Some[V](v: V) extends Option[V]
-  case object None extends Option[Nothing]   // Any <- Dog
+
+  case object None extends Option[Nothing] // Any <- Dog
 
   var o11: Option[Int] = None
 
-  object Option{
+  object Option {
     def apply[T](v: T): Option[T] =
-      if(v == null) None
+      if (v == null) None
       else Some(v)
   }
 
   val o1: Option[Int] = Option(1)
   o1.isEmpty // false
-
-
-
-
-
-
-
 
 
   /**
@@ -218,135 +192,131 @@ object hof{
    * в случае если исходный не пуст и предикат от значения = true
    */
 
- }
+}
 
- object list {
-   /**
-    *
-    * Реализовать односвязанный иммутабельный список List
-    * Список имеет два случая:
-    * Nil - пустой список
-    * Cons - непустой, содержит первый элемент (голову) и хвост (оставшийся список)
-    */
-
-
-    sealed trait List[+T]{
+object list {
+  /**
+   *
+   * Реализовать односвязанный иммутабельный список List
+   * Список имеет два случая:
+   * Nil - пустой список
+   * Cons - непустой, содержит первый элемент (голову) и хвост (оставшийся список)
+   */
 
 
-      def ::[TT >: T](el: TT): List[TT] = new ::(el, this)
+  sealed trait List[+T] {
 
 
-      def isEmpty = this match {
-        case ::(_, _) => false
-        case Nil => true
-      }
+    def ::[TT >: T](el: TT): List[TT] = new::(el, this)
 
+    def isEmpty = this match {
+      case ::(_, _) => false
+      case Nil => true
+    }
 
-      def reverse: List[T] = foldLeft(List[T]()){ case (acc, el) => el :: acc}
-
-      def :::[TT >: T](that: List[TT]): List[TT] = {
-        def go(l1: List[TT], l2: List[TT], acc: List[TT]): List[TT] = l2 match {
-          case ::(head, tail) => go(l1, tail, head :: acc)
-          case Nil => l1 match {
-            case ::(head, tail) => go(tail, l2, head :: acc)
-            case Nil => acc
-          }
-        }
-        if(this.isEmpty) that
-        else if(that.isEmpty) this
-        else {
-          go(this, that, Nil).reverse
+    def :::[TT >: T](that: List[TT]): List[TT] = {
+      def go(l1: List[TT], l2: List[TT], acc: List[TT]): List[TT] = l2 match {
+        case ::(head, tail) => go(l1, tail, head :: acc)
+        case Nil => l1 match {
+          case ::(head, tail) => go(tail, l2, head :: acc)
+          case Nil => acc
         }
       }
 
-      def map[B](f: T => B): List[B] = flatMap(t => List(f(t)))
-
-      def flatMap[B](f: T => List[B]): List[B] = this match {
-        case ::(head, tail) =>
-          f(head) ::: tail.flatMap(f)
-        case Nil => Nil
+      if (this.isEmpty) that
+      else if (that.isEmpty) this
+      else {
+        go(that, this, Nil).reverse
       }
+    }
 
+    def map[B](f: T => B): List[B] = flatMap(t => List(f(t)))
 
-      @tailrec
-      final def foldLeft[B](acc: B)(op: (B, T) => B): B = this match {
-        case ::(head, tail) => tail.foldLeft(op(acc, head))(op)
-        case Nil => acc
-      }
+    def flatMap[B](f: T => List[B]): List[B] = this match {
+      case ::(head, tail) => f(head) ::: tail.flatMap(f)
+      case Nil => Nil
+    }
 
-      def take(n: Int): List[T] = this.foldLeft((0, List[T]())){ case ((i, acc), el) =>
-        if(i == n) (i, acc)
+    @tailrec
+    final def foldLeft[B](acc: B)(op: (B, T) => B): B = this match {
+      case ::(head, tail) => tail.foldLeft(op(acc, head))(op)
+      case Nil => acc
+    }
+
+    def take(n: Int): List[T] = this.foldLeft(0, List[T]()) {
+      case ((i, acc), el) =>
+        if (i == n) (i, acc)
         else (i + 1, el :: acc)
-      }._2.reverse
+    }._2.reverse
 
-      def drop(n: Int): List[T] = this.foldLeft((0, List[T]())){ case ((i, acc), el) =>
-        if(i >= n) (i + 1, el :: acc)
-        else (i + 1, acc)
-      }._2.reverse
+    def drop(n: Int): List[T] = this.foldLeft((0, List[T]())) { case ((i, acc), el) =>
+      if (i >= n) (i + 1, el :: acc)
+      else (i + 1, acc)
+    }._2.reverse
 
-
+    def reverse: List[T] = foldLeft(List[T]()) {
+      case (acc, el) => (el :: acc)
     }
+  }
 
-   case class ::[A](head: A, tail: List[A]) extends List[A]
+  case class ::[A](head: A, tail: List[A]) extends List[A]
 
-   case object Nil extends List[Nothing]
-    object List{
+  case object Nil extends List[Nothing]
 
-      def empty[T]: List[T] = apply()
+  object List {
 
-      def apply[A](v: A*): List[A] =
-        if(v.isEmpty) Nil else ::(v.head, apply(v.tail:_*))
-    }
+    def empty[T]: List[T] = apply()
 
-
-
-
-
-   /**
-     * Метод cons, добавляет элемент в голову списка, для этого метода можно воспользоваться названием `::`
-     *
-     */
-
-    /**
-      * Метод mkString возвращает строковое представление списка, с учетом переданного разделителя
-      *
-      */
-
-    /**
-      * Конструктор, позволяющий создать список из N - го числа аргументов
-      * Для этого можно воспользоваться *
-      * 
-      * Например вот этот метод принимает некую последовательность аргументов с типом Int и выводит их на печать
-      * def printArgs(args: Int*) = args.foreach(println(_))
-      */
-
-    /**
-      *
-      * Реализовать метод reverse который позволит заменить порядок элементов в списке на противоположный
-      */
-
-    /**
-      *
-      * Реализовать метод map для списка который будет применять некую ф-цию к элементам данного списка
-      */
+    def apply[A](v: A*): List[A] =
+      if (v.isEmpty) Nil else ::(v.head, apply(v.tail: _*))
+  }
 
 
-    /**
-      *
-      * Реализовать метод filter для списка который будет фильтровать список по некому условию
-      */
+  /**
+   * Метод cons, добавляет элемент в голову списка, для этого метода можно воспользоваться названием `::`
+   *
+   */
 
-    /**
-      *
-      * Написать функцию incList котрая будет принимать список Int и возвращать список,
-      * где каждый элемент будет увеличен на 1
-      */
+  /**
+   * Метод mkString возвращает строковое представление списка, с учетом переданного разделителя
+   *
+   */
+
+  /**
+   * Конструктор, позволяющий создать список из N - го числа аргументов
+   * Для этого можно воспользоваться *
+   *
+   * Например вот этот метод принимает некую последовательность аргументов с типом Int и выводит их на печать
+   * def printArgs(args: Int*) = args.foreach(println(_))
+   */
+
+  /**
+   *
+   * Реализовать метод reverse который позволит заменить порядок элементов в списке на противоположный
+   */
+
+  /**
+   *
+   * Реализовать метод map для списка который будет применять некую ф-цию к элементам данного списка
+   */
 
 
-    /**
-      *
-      * Написать функцию shoutString котрая будет принимать список String и возвращать список,
-      * где к каждому элементу будет добавлен префикс в виде '!'
-      */
+  /**
+   *
+   * Реализовать метод filter для списка который будет фильтровать список по некому условию
+   */
 
- }
+  /**
+   *
+   * Написать функцию incList котрая будет принимать список Int и возвращать список,
+   * где каждый элемент будет увеличен на 1
+   */
+
+
+  /**
+   *
+   * Написать функцию shoutString котрая будет принимать список String и возвращать список,
+   * где к каждому элементу будет добавлен префикс в виде '!'
+   */
+
+}
