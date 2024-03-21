@@ -2,7 +2,7 @@ package module1
 
 import scala.Stream
 
-object parser{
+object parser {
 
 
 }
