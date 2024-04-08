@@ -5,10 +5,10 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     println("Hello, World!")
-//    val l1 = list.List(1, 2, 3)
-//    val l2 = list.List(4, 5, 6)
-//
-////     println(l1.drop(2))
+    val l1 = list.List(1, 2, 3)
+    val l2 = list.List(4, 5, 6)
+
+    // println(l1.drop(2))
 //    val l3: list.List[Int] = for{
 //      e1 <- l1
 //      e2 <- l2
