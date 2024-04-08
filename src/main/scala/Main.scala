@@ -1,17 +1,12 @@
-
-import module1.implicits.{implicit_conversions, implicit_scopes}
-import module1.{executor, future, hof, lazyOps, list, threads, try_, type_system}
-import module2.functional_effects.functionalProgram.{declarativeEncoding, executableEncoding}
-
-import java.util.concurrent.Executor
-import scala.concurrent.Future
+import module1.{hof, lazyOps, list, type_system}
 
 
 object Main {
 
   def main(args: Array[String]): Unit = {
-    println(s"Hello, World! - ${Thread.currentThread().getName}")
-
+    println("Hello, World!")
+    val l1 = list.List(1, 2, 3)
+    val l2 = list.List(4, 5, 6)
 
     // println(l1.drop(2))
 //    val l3: list.List[Int] = for{
@@ -31,43 +26,7 @@ object Main {
 //
 //    op1.flatMap(e1 => op2.map(e2 => e1 + e2))
 
-//    val t1 = new threads.Thread1
-//    val t2 = new Thread{
-//      override def run(): Unit = {
-//        Thread.sleep(1000)
-//        println(s"Hello from - ${Thread.currentThread().getName}")
-//      }
-//    }
-//    t2.start()
-//    t2.join()
-//    t1.start()
-
-//    def combined: threads.ToyFuture[Int] = for{
-//      v1 <- threads.getRatesLocation7
-//      v2 <- threads.getRatesLocation8
-//    } yield  v1 + v2
-//
-//    combined.onComplete(println)
-//
-//    threads.printRunningTime(combined)
-
-//     def ratesF: Future[Unit] = {
-//       val f1 = future.getRatesLocation1
-//       val f2 = future.getRatesLocation2
-//       f1.flatMap{ i1 =>
-//         f2.map{ i2 =>
-//           println(i1 + i2)
-//         }(future.ec)
-//       }(future.ec)
-//
-//     }
-//
-//     future.printRunningTime(ratesF)
-
-  //  implicit_scopes.result
-
-    declarativeEncoding.interpret(declarativeEncoding.greet2)
-
+      lazyOps
   }
 }
 
